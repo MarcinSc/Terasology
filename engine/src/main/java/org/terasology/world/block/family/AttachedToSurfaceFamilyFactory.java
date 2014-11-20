@@ -20,6 +20,7 @@ import com.google.gson.JsonObject;
 import org.terasology.asset.AssetUri;
 import org.terasology.math.Side;
 import org.terasology.world.block.Block;
+import org.terasology.world.block.BlockBuilder;
 import org.terasology.world.block.BlockUri;
 import org.terasology.world.block.loader.BlockDefinition;
 
@@ -34,10 +35,10 @@ public class AttachedToSurfaceFamilyFactory implements BlockFamilyFactory {
 
     @Override
     public BlockFamily createBlockFamily(BlockBuilderHelper blockBuilder, AssetUri blockDefUri, BlockDefinition blockDefinition, JsonObject blockDefJson) {
-        Map<Side, Block> blockMap = Maps.newEnumMap(Side.class);
+        Map<Side, BlockBuilder> blockMap = Maps.newEnumMap(Side.class);
         BlockDefinition topDef = blockBuilder.getBlockDefinitionForSection(blockDefJson, TOP);
         if (topDef != null) {
-            Block block = blockBuilder.constructSimpleBlock(blockDefUri, topDef);
+            BlockBuilder block = blockBuilder.constructSimpleBlock(blockDefUri, topDef);
             block.setDirection(Side.TOP);
             blockMap.put(Side.TOP, block);
         }
@@ -47,11 +48,10 @@ public class AttachedToSurfaceFamilyFactory implements BlockFamilyFactory {
         }
         BlockDefinition bottomDef = blockBuilder.getBlockDefinitionForSection(blockDefJson, BOTTOM);
         if (bottomDef != null) {
-            Block block = blockBuilder.constructSimpleBlock(blockDefUri, bottomDef);
+            BlockBuilder block = blockBuilder.constructSimpleBlock(blockDefUri, bottomDef);
             block.setDirection(Side.BOTTOM);
             blockMap.put(Side.BOTTOM, block);
         }
         return new AttachedToSurfaceFamily(new BlockUri(blockDefUri.getModuleName(), blockDefUri.getAssetName()), blockMap, blockDefinition.categories);
     }
-
 }

@@ -21,6 +21,7 @@ import org.terasology.math.Vector3i;
 import org.terasology.world.BlockEntityRegistry;
 import org.terasology.world.WorldProvider;
 import org.terasology.world.block.Block;
+import org.terasology.world.block.BlockBuilder;
 import org.terasology.world.block.BlockUri;
 
 import java.util.Locale;
@@ -37,14 +38,14 @@ public class AttachedToSurfaceFamily extends AbstractBlockFamily {
      * @param uri    The uri for the block group.
      * @param blocks The set of blocks that make up the group. Front, Back, Left and Right must be provided - the rest is ignored.
      */
-    public AttachedToSurfaceFamily(BlockUri uri, Map<Side, Block> blocks, Iterable<String> categories) {
+    public AttachedToSurfaceFamily(BlockUri uri, Map<Side, BlockBuilder> blocks, Iterable<String> categories) {
         super(uri, categories);
         for (Side side : Side.values()) {
-            Block block = blocks.get(side);
+            BlockBuilder block = blocks.get(side);
             if (block != null) {
-                this.blocks.put(side, block);
-                block.setBlockFamily(this);
+                block.setFamily(this);
                 block.setUri(new BlockUri(uri, side.name()));
+                this.blocks.put(side, block.build());
             }
         }
         if (this.blocks.containsKey(Side.TOP)) {

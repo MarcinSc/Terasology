@@ -20,6 +20,7 @@ import com.google.gson.JsonObject;
 import org.terasology.asset.AssetUri;
 import org.terasology.math.Side;
 import org.terasology.world.block.Block;
+import org.terasology.world.block.BlockBuilder;
 import org.terasology.world.block.BlockUri;
 import org.terasology.world.block.loader.BlockDefinition;
 
@@ -33,9 +34,8 @@ public class HorizontalBlockFamilyFactory implements BlockFamilyFactory {
 
     @Override
     public BlockFamily createBlockFamily(BlockBuilderHelper blockBuilder, AssetUri blockDefUri, BlockDefinition blockDefinition, JsonObject blockDefJson) {
-        Map<Side, Block> blockMap = Maps.newHashMap();
+        Map<Side, BlockBuilder> blockMap = Maps.newHashMap();
         blockMap.putAll(blockBuilder.constructHorizontalRotatedBlocks(blockDefUri, blockDefinition));
         return new HorizontalBlockFamily(new BlockUri(blockDefUri.getModuleName(), blockDefUri.getAssetName()), getArchetypeSide(), blockMap, blockDefinition.categories);
     }
-
 }

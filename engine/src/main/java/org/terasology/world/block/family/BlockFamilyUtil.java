@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 MovingBlocks
+ * Copyright 2014 MovingBlocks
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,24 +15,23 @@
  */
 package org.terasology.world.block.family;
 
-import com.google.gson.JsonObject;
-import org.terasology.asset.AssetUri;
-import org.terasology.math.Rotation;
+import com.google.common.collect.Maps;
 import org.terasology.math.Side;
 import org.terasology.world.block.Block;
 import org.terasology.world.block.BlockBuilder;
-import org.terasology.world.block.loader.BlockDefinition;
 
 import java.util.Map;
 
-public interface BlockBuilderHelper {
+public class BlockFamilyUtil {
+    private BlockFamilyUtil() {
 
-    BlockBuilder constructSimpleBlock(AssetUri blockDefUri, BlockDefinition blockDefinition);
+    }
 
-    Map<Side, BlockBuilder> constructHorizontalRotatedBlocks(AssetUri blockDefUri, BlockDefinition blockDefinition);
-
-    BlockBuilder constructTransformedBlock(AssetUri blockDefUri, BlockDefinition blockDefinition, Rotation rotation);
-
-    BlockDefinition getBlockDefinitionForSection(JsonObject json, String sectionName);
-
+    public static Map<Side, Block> buildBlockMap(Map<Side, BlockBuilder> blockMap) {
+        Map<Side, Block> result = Maps.newHashMap();
+        for (Map.Entry<Side, BlockBuilder> sideBlockBuilderEntry : blockMap.entrySet()) {
+            result.put(sideBlockBuilderEntry.getKey(), sideBlockBuilderEntry.getValue().build());
+        }
+        return result;
+    }
 }

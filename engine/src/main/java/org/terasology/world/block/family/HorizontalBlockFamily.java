@@ -21,6 +21,7 @@ import org.terasology.math.Vector3i;
 import org.terasology.world.BlockEntityRegistry;
 import org.terasology.world.WorldProvider;
 import org.terasology.world.block.Block;
+import org.terasology.world.block.BlockBuilder;
 import org.terasology.world.block.BlockUri;
 
 import java.util.Locale;
@@ -41,21 +42,21 @@ public class HorizontalBlockFamily extends AbstractBlockFamily implements SideDe
      * @param blocks     The set of blocks that make up the group. Front, Back, Left and Right must be provided - the rest is ignored.
      * @param categories The set of categories this block family belongs to
      */
-    public HorizontalBlockFamily(BlockUri uri, Map<Side, Block> blocks, Iterable<String> categories) {
+    public HorizontalBlockFamily(BlockUri uri, Map<Side, BlockBuilder> blocks, Iterable<String> categories) {
         this(uri, Side.FRONT, blocks, categories);
     }
 
-    public HorizontalBlockFamily(BlockUri uri, Side archetypeSide, Map<Side, Block> blocks, Iterable<String> categories) {
+    public HorizontalBlockFamily(BlockUri uri, Side archetypeSide, Map<Side, BlockBuilder> blocks, Iterable<String> categories) {
         super(uri, categories);
         this.archetypeSide = archetypeSide;
         for (Side side : Side.horizontalSides()) {
-            Block block = blocks.get(side);
+            BlockBuilder block = blocks.get(side);
             if (block == null) {
                 throw new IllegalArgumentException("Missing block for side: " + side.toString());
             }
-            this.blocks.put(side, block);
-            block.setBlockFamily(this);
+            block.setFamily(this);
             block.setUri(new BlockUri(uri, side.name()));
+            this.blocks.put(side, block.build());
         }
     }
 

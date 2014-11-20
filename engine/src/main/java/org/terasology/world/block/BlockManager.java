@@ -34,19 +34,21 @@ public abstract class BlockManager implements BlockSoundsRegistry {
     private static final BlockFamily AIR_FAMILY;
 
     static {
-        AIR = new Block();
-        AIR.setTranslucent(true);
-        AIR.setInvisible(true);
-        AIR.setTargetable(false);
-        AIR.setPenetrable(true);
-        AIR.setReplacementAllowed(true);
-        AIR.setShadowCasting(false);
-        AIR.setAttachmentAllowed(false);
-        AIR.setHardness((byte) 0);
-        AIR.setId((short) 0);
-        AIR.setDisplayName("Air");
-        AIR.setUri(new BlockUri(TerasologyConstants.ENGINE_MODULE, AIR_ID));
-        AIR_FAMILY = new SymmetricFamily(AIR.getURI(), AIR);
+        BlockUri airUri = new BlockUri(TerasologyConstants.ENGINE_MODULE, AIR_ID);
+        BlockBuilder airBuilder = new BlockBuilder()
+                .setTranslucent(true)
+                .setInvisible(true)
+                .setTargetable(false)
+                .setPenetrable(true)
+                .setReplacementAllowed(true)
+                .setShadowCasting(false)
+                .setAttachmentAllowed(false)
+                .setHardness((byte) 0)
+                .setId((short) 0)
+                .setDisplayName("Air")
+                .setUri(airUri);
+        AIR_FAMILY = new SymmetricFamily(airUri, airBuilder);
+        AIR = AIR_FAMILY.getArchetypeBlock();
     }
 
     public static Block getAir() {

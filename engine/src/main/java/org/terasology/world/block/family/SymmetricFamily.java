@@ -20,6 +20,7 @@ import org.terasology.math.Vector3i;
 import org.terasology.world.BlockEntityRegistry;
 import org.terasology.world.WorldProvider;
 import org.terasology.world.block.Block;
+import org.terasology.world.block.BlockBuilder;
 import org.terasology.world.block.BlockUri;
 
 import java.util.Arrays;
@@ -34,15 +35,15 @@ public class SymmetricFamily extends AbstractBlockFamily {
 
     private Block block;
 
-    public SymmetricFamily(BlockUri uri, Block block) {
+    public SymmetricFamily(BlockUri uri, BlockBuilder block) {
         this(uri, block, Collections.<String>emptyList());
     }
 
-    public SymmetricFamily(BlockUri uri, Block block, Iterable<String> categories) {
+    public SymmetricFamily(BlockUri uri, BlockBuilder block, Iterable<String> categories) {
         super(uri, categories);
-        this.block = block;
-        block.setBlockFamily(this);
+        block.setFamily(this);
         block.setUri(uri);
+        this.block = block.build();
     }
 
     @Override

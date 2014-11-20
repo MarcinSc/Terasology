@@ -50,6 +50,7 @@ import org.terasology.world.WorldProvider;
 import org.terasology.world.biomes.Biome;
 import org.terasology.world.biomes.BiomeManager;
 import org.terasology.world.block.Block;
+import org.terasology.world.block.BlockBuilder;
 import org.terasology.world.block.BlockManager;
 import org.terasology.world.block.BlockUri;
 import org.terasology.world.block.family.DefaultBlockFamilyFactoryRegistry;
@@ -119,12 +120,12 @@ public class StorageManagerTest {
         when(networkSystem.getPlayers()).thenReturn(Arrays.asList(client));
 
         BlockManagerImpl blockManager = CoreRegistry.put(BlockManager.class, new BlockManagerImpl(mock(WorldAtlas.class), new DefaultBlockFamilyFactoryRegistry()));
-        testBlock = new Block();
-        testBlock.setId((short) 1);
-        blockManager.addBlockFamily(new SymmetricFamily(new BlockUri("test:testblock"), testBlock), true);
-        testBlock2 = new Block();
-        testBlock2.setId((short) 2);
-        blockManager.addBlockFamily(new SymmetricFamily(new BlockUri("test:testblock2"), testBlock2), true);
+        SymmetricFamily family = new SymmetricFamily(new BlockUri("test:testblock"), new BlockBuilder().setId((short) 1));
+        testBlock = family.getArchetypeBlock();
+        blockManager.addBlockFamily(family, true);
+        SymmetricFamily family1 = new SymmetricFamily(new BlockUri("test:testblock2"), new BlockBuilder().setId((short) 2));
+        testBlock2 = family1.getArchetypeBlock();
+        blockManager.addBlockFamily(family1, true);
 
         esm = new StorageManagerInternal(moduleManager.getEnvironment(), entityManager, false);
         CoreRegistry.put(StorageManager.class, esm);

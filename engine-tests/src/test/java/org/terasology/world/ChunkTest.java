@@ -21,6 +21,7 @@ import org.terasology.TerasologyTestingEnvironment;
 import org.terasology.math.Vector3i;
 import org.terasology.registry.CoreRegistry;
 import org.terasology.world.block.Block;
+import org.terasology.world.block.BlockBuilder;
 import org.terasology.world.block.BlockManager;
 import org.terasology.world.block.BlockUri;
 import org.terasology.world.block.family.DefaultBlockFamilyFactoryRegistry;
@@ -52,7 +53,7 @@ public class ChunkTest extends TerasologyTestingEnvironment {
     @Test
     public void testChangeBlock() {
 
-        blockManager.addBlockFamily(new SymmetricFamily(new BlockUri("some:uri"), new Block()), false);
+        blockManager.addBlockFamily(new SymmetricFamily(new BlockUri("some:uri"), new BlockBuilder()), false);
         Block block = blockManager.getBlock("some:uri");
         chunk.setBlock(new Vector3i(1, 2, 3), block);
         assertEquals(block, chunk.getBlock(new Vector3i(1, 2, 3)));

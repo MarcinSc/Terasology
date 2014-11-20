@@ -25,6 +25,7 @@ import org.terasology.math.Side;
 import org.terasology.math.Vector3i;
 import org.terasology.registry.CoreRegistry;
 import org.terasology.world.block.Block;
+import org.terasology.world.block.BlockBuilder;
 import org.terasology.world.block.BlockManager;
 import org.terasology.world.block.BlockUri;
 import org.terasology.world.block.family.DefaultBlockFamilyFactoryRegistry;
@@ -53,22 +54,26 @@ public class InternalLightGeneratorTest extends TerasologyTestingEnvironment {
         BlockManagerImpl blockManager = new BlockManagerImpl(new NullWorldAtlas(), new DefaultBlockFamilyFactoryRegistry());
         CoreRegistry.put(BlockManager.class, blockManager);
         airBlock = BlockManager.getAir();
-        solidBlock = new Block();
-        solidBlock.setDisplayName("Stone");
-        solidBlock.setUri(new BlockUri("engine:stone"));
-        solidBlock.setId((short) 1);
+        BlockBuilder solidBuilder = new BlockBuilder()
+                .setDisplayName("Stone")
+                .setUri(new BlockUri("engine:stone"))
+                .setId((short) 1);
         for (Side side : Side.values()) {
-            solidBlock.setFullSide(side, true);
+            solidBuilder.setFullSide(side, true);
         }
-        solidBlock.setTranslucent(false);
-        blockManager.addBlockFamily(new SymmetricFamily(solidBlock.getURI(), solidBlock), true);
+        solidBuilder.setTranslucent(false);
+        SymmetricFamily family = new SymmetricFamily(solidBlock.getURI(), solidBuilder);
+        solidBlock = family.getArchetypeBlock();
+        blockManager.addBlockFamily(family, true);
 
-        fullLight = new Block();
-        fullLight.setDisplayName("Torch");
-        fullLight.setUri(new BlockUri("engine:torch"));
-        fullLight.setId((short) 2);
-        fullLight.setLuminance(ChunkConstants.MAX_LIGHT);
-        blockManager.addBlockFamily(new SymmetricFamily(fullLight.getURI(), fullLight), true);
+        BlockBuilder fullLightBuilder = new BlockBuilder()
+                .setDisplayName("Torch")
+                .setUri(new BlockUri("engine:torch"))
+                .setId((short) 2)
+                .setLuminance(ChunkConstants.MAX_LIGHT);
+        SymmetricFamily family1 = new SymmetricFamily(fullLight.getURI(), fullLightBuilder);
+        fullLight = family1.getArchetypeBlock();
+        blockManager.addBlockFamily(family1, true);
     }
 
     @Test

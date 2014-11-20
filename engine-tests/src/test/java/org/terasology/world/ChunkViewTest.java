@@ -23,6 +23,7 @@ import org.terasology.math.Region3i;
 import org.terasology.math.Vector3i;
 import org.terasology.registry.CoreRegistry;
 import org.terasology.world.block.Block;
+import org.terasology.world.block.BlockBuilder;
 import org.terasology.world.block.BlockManager;
 import org.terasology.world.block.BlockUri;
 import org.terasology.world.block.family.DefaultBlockFamilyFactoryRegistry;
@@ -52,10 +53,11 @@ public class ChunkViewTest extends TerasologyTestingEnvironment {
         BlockManagerImpl blockManager = new BlockManagerImpl(new NullWorldAtlas(), new DefaultBlockFamilyFactoryRegistry());
         CoreRegistry.put(BlockManager.class, blockManager);
         airBlock = BlockManager.getAir();
-        solidBlock = new Block();
-        solidBlock.setDisplayName("Stone");
-        solidBlock.setUri(new BlockUri("engine:stone"));
-        blockManager.addBlockFamily(new SymmetricFamily(solidBlock.getURI(), solidBlock), true);
+        SymmetricFamily family = new SymmetricFamily(solidBlock.getURI(), new BlockBuilder()
+                .setDisplayName("Stone")
+                .setUri(new BlockUri("engine:stone")));
+        solidBlock = family.getArchetypeBlock();
+        blockManager.addBlockFamily(family, true);
         solidBlock = blockManager.getBlock(solidBlock.getURI());
     }
 

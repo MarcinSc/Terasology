@@ -25,6 +25,7 @@ import org.terasology.math.Side;
 import org.terasology.math.Vector3i;
 import org.terasology.registry.CoreRegistry;
 import org.terasology.world.block.Block;
+import org.terasology.world.block.BlockBuilder;
 import org.terasology.world.block.BlockManager;
 import org.terasology.world.block.BlockUri;
 import org.terasology.world.block.family.DefaultBlockFamilyFactoryRegistry;
@@ -66,14 +67,16 @@ public class BulkSunlightPropagationTest extends TerasologyTestingEnvironment {
                 Lists.<String>newArrayList(), Maps.<String, Short>newHashMap(), true, new DefaultBlockFamilyFactoryRegistry());
         CoreRegistry.put(BlockManager.class, blockManager);
 
-        solid = new Block();
-        solid.setDisplayName("Solid");
-        solid.setUri(new BlockUri("engine:solid"));
-        solid.setId((short) 5);
+        BlockBuilder solidBuilder = new BlockBuilder()
+                .setDisplayName("Solid")
+                .setUri(new BlockUri("engine:solid"))
+                .setId((short) 5);
         for (Side side : Side.values()) {
-            solid.setFullSide(side, true);
+            solidBuilder.setFullSide(side, true);
         }
-        blockManager.addBlockFamily(new SymmetricFamily(solid.getURI(), solid), true);
+        SymmetricFamily family = new SymmetricFamily(solid.getURI(), solidBuilder);
+        solid = family.getArchetypeBlock();
+        blockManager.addBlockFamily(family, true);
 
         Map<Vector3i, Block> blockData = Maps.newHashMap();
         regenWorldView = new StubPropagatorWorldView(ChunkConstants.CHUNK_REGION, blockData);

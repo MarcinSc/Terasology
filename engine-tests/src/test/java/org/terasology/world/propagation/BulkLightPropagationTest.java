@@ -26,6 +26,7 @@ import org.terasology.math.Side;
 import org.terasology.math.Vector3i;
 import org.terasology.registry.CoreRegistry;
 import org.terasology.world.block.Block;
+import org.terasology.world.block.BlockBuilder;
 import org.terasology.world.block.BlockManager;
 import org.terasology.world.block.BlockUri;
 import org.terasology.world.block.family.DefaultBlockFamilyFactoryRegistry;
@@ -61,45 +62,52 @@ public class BulkLightPropagationTest extends TerasologyTestingEnvironment {
         blockManager = new BlockManagerImpl(new NullWorldAtlas(),
                 Lists.<String>newArrayList(), Maps.<String, Short>newHashMap(), true, new DefaultBlockFamilyFactoryRegistry());
         CoreRegistry.put(BlockManager.class, blockManager);
-        fullLight = new Block();
-        fullLight.setDisplayName("Torch");
-        fullLight.setUri(new BlockUri("engine:torch"));
-        fullLight.setId((short) 2);
-        fullLight.setLuminance(ChunkConstants.MAX_LIGHT);
-        blockManager.addBlockFamily(new SymmetricFamily(fullLight.getURI(), fullLight), true);
+        SymmetricFamily family = new SymmetricFamily(fullLight.getURI(), new BlockBuilder()
+                        .setDisplayName("Torch")
+                        .setUri(new BlockUri("engine:torch"))
+                        .setId((short) 2)
+                        .setLuminance(ChunkConstants.MAX_LIGHT));
+        fullLight = family.getArchetypeBlock();
+        blockManager.addBlockFamily(family, true);
 
-        weakLight = new Block();
-        weakLight.setDisplayName("PartLight");
-        weakLight.setUri(new BlockUri("engine:weakLight"));
-        weakLight.setId((short) 3);
-        weakLight.setLuminance((byte) 2);
-        blockManager.addBlockFamily(new SymmetricFamily(weakLight.getURI(), weakLight), true);
+        SymmetricFamily family1 = new SymmetricFamily(weakLight.getURI(), new BlockBuilder()
+                .setDisplayName("PartLight")
+                .setUri(new BlockUri("engine:weakLight"))
+                .setId((short) 3)
+                .setLuminance((byte) 2));
+        weakLight = family1.getArchetypeBlock();
+        blockManager.addBlockFamily(family1, true);
 
-        mediumLight = new Block();
-        mediumLight.setDisplayName("MediumLight");
-        mediumLight.setUri(new BlockUri("engine:mediumLight"));
-        mediumLight.setId((short) 4);
-        mediumLight.setLuminance((byte) 5);
-        blockManager.addBlockFamily(new SymmetricFamily(mediumLight.getURI(), mediumLight), true);
+        SymmetricFamily family2 = new SymmetricFamily(mediumLight.getURI(), new BlockBuilder()
+                .setDisplayName("MediumLight")
+                .setUri(new BlockUri("engine:mediumLight"))
+                .setId((short) 4)
+                .setLuminance((byte) 5));
+        mediumLight = family2.getArchetypeBlock();
+        blockManager.addBlockFamily(family2, true);
 
-        solid = new Block();
-        solid.setDisplayName("Solid");
-        solid.setUri(new BlockUri("engine:solid"));
-        solid.setId((short) 5);
+        BlockBuilder solidBuilder = new BlockBuilder()
+                .setDisplayName("Solid")
+                .setUri(new BlockUri("engine:solid"))
+                .setId((short) 5);
         for (Side side : Side.values()) {
-            solid.setFullSide(side, true);
+            solidBuilder.setFullSide(side, true);
         }
-        blockManager.addBlockFamily(new SymmetricFamily(solid.getURI(), solid), true);
+        SymmetricFamily family3 = new SymmetricFamily(solid.getURI(), solidBuilder);
+        solid = family3.getArchetypeBlock();
+        blockManager.addBlockFamily(family3, true);
 
-        solidMediumLight = new Block();
-        solidMediumLight.setDisplayName("SolidMediumLight");
-        solidMediumLight.setUri(new BlockUri("engine:solidMediumLight"));
-        solidMediumLight.setId((short) 6);
-        solidMediumLight.setLuminance((byte) 5);
+        BlockBuilder solidMediumBuilder = new BlockBuilder()
+                .setDisplayName("SolidMediumLight")
+                .setUri(new BlockUri("engine:solidMediumLight"))
+                .setId((short) 6)
+                .setLuminance((byte) 5);
         for (Side side : Side.values()) {
-            solidMediumLight.setFullSide(side, true);
+            solidMediumBuilder.setFullSide(side, true);
         }
-        blockManager.addBlockFamily(new SymmetricFamily(solidMediumLight.getURI(), solidMediumLight), true);
+        SymmetricFamily family4 = new SymmetricFamily(solidMediumLight.getURI(), solidMediumBuilder);
+        solidMediumLight = family4.getArchetypeBlock();
+        blockManager.addBlockFamily(family4, true);
 
 
         air = BlockManager.getAir();

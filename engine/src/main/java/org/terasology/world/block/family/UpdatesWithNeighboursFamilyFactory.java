@@ -25,6 +25,7 @@ import org.terasology.math.Rotation;
 import org.terasology.math.Side;
 import org.terasology.math.SideBitFlag;
 import org.terasology.world.block.Block;
+import org.terasology.world.block.BlockBuilder;
 import org.terasology.world.block.BlockUri;
 import org.terasology.world.block.loader.BlockDefinition;
 
@@ -86,7 +87,7 @@ public abstract class UpdatesWithNeighboursFamilyFactory implements BlockFamilyF
     @Override
     public BlockFamily createBlockFamily(BlockBuilderHelper blockBuilder, AssetUri blockDefUri, BlockDefinition blockDefinition, JsonObject blockDefJson) {
         TByteObjectMap<BlockDefinition>[] basicBlocks = new TByteObjectMap[7];
-        TByteObjectMap<Block> blocksForConnections = new TByteObjectHashMap<>();
+        TByteObjectMap<BlockBuilder> blocksForConnections = new TByteObjectHashMap<>();
 
         basicBlocks[0] = new TByteObjectHashMap<>();
         putBlockDefinition(basicBlocks[0], blockBuilder, blockDefJson, NO_CONNECTIONS);
@@ -118,7 +119,7 @@ public abstract class UpdatesWithNeighboursFamilyFactory implements BlockFamilyF
         for (byte connections = 0; connections < 64; connections++) {
             // Only the allowed connections should be created
             if ((connections & connectionSides) == connections) {
-                Block block = constructBlockForConnections(connections, blockBuilder, blockDefUri, basicBlocks);
+                BlockBuilder block = constructBlockForConnections(connections, blockBuilder, blockDefUri, basicBlocks);
                 if (block == null) {
                     throw new IllegalStateException("Unable to find correct block definition for connections: " + connections);
                 }
@@ -127,7 +128,7 @@ public abstract class UpdatesWithNeighboursFamilyFactory implements BlockFamilyF
             }
         }
 
-        final Block archetypeBlock = blocksForConnections.get(SideBitFlag.getSides(Side.RIGHT, Side.LEFT));
+        final Block archetypeBlock = blocksForConnections.get(SideBitFlag.getSides(Side.RIGHT, Side.LEFT)).build();
         return new UpdatesWithNeighboursFamily(connectionCondition, blockUri, blockDefinition.categories,
                 archetypeBlock, blocksForConnections, connectionSides);
     }
@@ -140,7 +141,7 @@ public abstract class UpdatesWithNeighboursFamilyFactory implements BlockFamilyF
         }
     }
 
-    private Block constructBlockForConnections(final byte connections, final BlockBuilderHelper blockBuilder,
+    private BlockBuilder constructBlockForConnections(final byte connections, final BlockBuilderHelper blockBuilder,
                                                final AssetUri blockDefUri, TByteObjectMap<BlockDefinition>[] basicBlocks) {
         int connectionCount = SideBitFlag.getSides(connections).size();
         TByteObjectMap<BlockDefinition> possibleBlockDefinitions = basicBlocks[connectionCount];

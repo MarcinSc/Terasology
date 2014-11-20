@@ -62,6 +62,7 @@ import org.terasology.testUtil.ModuleManagerFactory;
 import org.terasology.testUtil.WorldProviderCoreStub;
 import org.terasology.world.biomes.BiomeManager;
 import org.terasology.world.block.Block;
+import org.terasology.world.block.BlockBuilder;
 import org.terasology.world.block.BlockComponent;
 import org.terasology.world.block.BlockManager;
 import org.terasology.world.block.BlockUri;
@@ -130,46 +131,49 @@ public class EntityAwareWorldProviderTest {
         worldStub = new WorldProviderCoreStub();
         worldProvider = new EntityAwareWorldProvider(worldStub, entityManager);
 
-        plainBlock = new Block();
-        blockManager.addBlockFamily(new SymmetricFamily(new BlockUri("test:plainBlock"), plainBlock), true);
+        SymmetricFamily family = new SymmetricFamily(new BlockUri("test:plainBlock"), new BlockBuilder());
+        plainBlock = family.getArchetypeBlock();
+        blockManager.addBlockFamily(family, true);
 
-        blockWithString = new Block();
         PrefabData prefabData = new PrefabData();
         prefabData.addComponent(new StringComponent("Test"));
         Assets.generateAsset(new AssetUri(AssetType.PREFAB, "test:prefabWithString"), prefabData, Prefab.class);
-        blockWithString.setPrefab("test:prefabWithString");
-        blockManager.addBlockFamily(new SymmetricFamily(new BlockUri("test:blockWithString"), blockWithString), true);
+        SymmetricFamily family1 = new SymmetricFamily(new BlockUri("test:blockWithString"), new BlockBuilder().setPrefab("test:prefabWithString"));
+        blockWithString = family1.getArchetypeBlock();
+        blockManager.addBlockFamily(family1, true);
 
-        blockWithDifferentString = new Block();
         prefabData = new PrefabData();
         prefabData.addComponent(new StringComponent("Test2"));
         Assets.generateAsset(
                 new AssetUri(AssetType.PREFAB, "test:prefabWithDifferentString"), prefabData, Prefab.class);
-        blockWithDifferentString.setPrefab("test:prefabWithDifferentString");
-        blockManager.addBlockFamily(new SymmetricFamily(new BlockUri("test:blockWithDifferentString"), blockWithDifferentString), true);
+        SymmetricFamily family2 = new SymmetricFamily(new BlockUri("test:blockWithDifferentString"), new BlockBuilder().setPrefab("test:prefabWithDifferentString"));
+        blockWithDifferentString = family2.getArchetypeBlock();
+        blockManager.addBlockFamily(family2, true);
 
-        blockWithRetainedComponent = new Block();
         prefabData = new PrefabData();
         prefabData.addComponent(new RetainedOnBlockChangeComponent(3));
         Assets.generateAsset(
                 new AssetUri(AssetType.PREFAB, "test:prefabWithRetainedComponent"), prefabData, Prefab.class);
-        blockWithRetainedComponent.setPrefab("test:prefabWithRetainedComponent");
-        blockManager.addBlockFamily(new SymmetricFamily(new BlockUri("test:blockWithRetainedComponent"), blockWithRetainedComponent), true);
+        SymmetricFamily family3 = new SymmetricFamily(new BlockUri("test:blockWithRetainedComponent"), new BlockBuilder().setPrefab("test:prefabWithRetainedComponent"));
+        blockWithRetainedComponent = family3.getArchetypeBlock();
+        blockManager.addBlockFamily(family3, true);
 
-        blockInFamilyOne = new Block();
-        blockInFamilyOne.setKeepActive(true);
-        blockInFamilyOne.setPrefab("test:prefabWithString");
-        blockInFamilyTwo = new Block();
-        blockInFamilyTwo.setPrefab("test:prefabWithString");
-        blockInFamilyTwo.setKeepActive(true);
-        blockManager.addBlockFamily(new HorizontalBlockFamily(new BlockUri("test:blockFamily"),
-                ImmutableMap.<Side, Block>of(Side.FRONT, blockInFamilyOne, Side.LEFT, blockInFamilyTwo, Side.RIGHT, blockInFamilyTwo, Side.BACK, blockInFamilyOne),
-                Collections.<String>emptyList()), true);
+        HorizontalBlockFamily family4 = new HorizontalBlockFamily(new BlockUri("test:blockFamily"),
+                ImmutableMap.of(
+                        Side.FRONT, new BlockBuilder().setKeepActive(true).setPrefab("test:prefabWithString"),
+                        Side.LEFT, new BlockBuilder().setPrefab("test:prefabWithString").setKeepActive(true),
+                        Side.RIGHT, new BlockBuilder().setPrefab("test:prefabWithString").setKeepActive(true),
+                        Side.BACK, new BlockBuilder().setKeepActive(true).setPrefab("test:prefabWithString")),
+                Collections.<String>emptyList());
+        blockManager.addBlockFamily(family4, true);
+        blockInFamilyOne = family4.getBlockForSide(Side.FRONT);
+        blockInFamilyTwo = family4.getBlockForSide(Side.LEFT);
 
-        keepActiveBlock = new Block();
-        keepActiveBlock.setKeepActive(true);
-        keepActiveBlock.setPrefab("test:prefabWithString");
-        blockManager.addBlockFamily(new SymmetricFamily(new BlockUri("test:keepActiveBlock"), keepActiveBlock), true);
+        SymmetricFamily family5 = new SymmetricFamily(new BlockUri("test:keepActiveBlock"), new BlockBuilder()
+                .setKeepActive(true)
+                .setPrefab("test:prefabWithString"));
+        blockManager.addBlockFamily(family5, true);
+        keepActiveBlock = family5.getArchetypeBlock();
 
         worldProvider.initialise();
     }
@@ -201,9 +205,9 @@ public class EntityAwareWorldProviderTest {
 
     @Test
     public void testActiveBlockNotCleanedUp() {
-        Block testBlock = new Block();
-        testBlock.setKeepActive(true);
-        BlockFamily blockFamily = new SymmetricFamily(new BlockUri("test:keepActive"), testBlock);
+        BlockFamily blockFamily = new SymmetricFamily(new BlockUri("test:keepActive"), new BlockBuilder()
+                        .setKeepActive(true));
+        Block testBlock = blockFamily.getArchetypeBlock();
         blockManager.addBlockFamily(blockFamily, true);
         worldStub.setBlock(Vector3i.zero(), testBlock);
 

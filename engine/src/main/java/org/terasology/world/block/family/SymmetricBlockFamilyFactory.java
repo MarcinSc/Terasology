@@ -18,6 +18,7 @@ package org.terasology.world.block.family;
 import com.google.gson.JsonObject;
 import org.terasology.asset.AssetUri;
 import org.terasology.world.block.Block;
+import org.terasology.world.block.BlockBuilder;
 import org.terasology.world.block.BlockUri;
 import org.terasology.world.block.loader.BlockDefinition;
 
@@ -26,7 +27,7 @@ public class SymmetricBlockFamilyFactory implements BlockFamilyFactory {
 
     @Override
     public BlockFamily createBlockFamily(BlockBuilderHelper blockBuilder, AssetUri blockDefUri, BlockDefinition blockDefinition, JsonObject blockDefJson) {
-        Block block = blockBuilder.constructSimpleBlock(blockDefUri, blockDefinition);
+        BlockBuilder block = blockBuilder.constructSimpleBlock(blockDefUri, blockDefinition);
         return new SymmetricFamily(new BlockUri(blockDefUri.getModuleName(), blockDefUri.getAssetName()), block, blockDefinition.categories);
     }
 }

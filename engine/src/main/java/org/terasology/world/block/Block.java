@@ -70,78 +70,121 @@ public final class Block {
         DIRECTION_LIT_LEVEL.put(BlockPart.CENTER, 0.8f);
     }
 
+    // Mutable
     private short id;
-    private String displayName = "Untitled block";
-    private BlockUri uri;
-    private BlockFamily family;
-    private Side direction = Side.FRONT;
+    private EntityRef entity;
+    private boolean keepActive;
+    private boolean lifecycleEventsRequired;
+    private Mesh mesh;
+
+    // Immutable
+    private final String displayName;
+    private final BlockUri uri;
+    private final BlockFamily family;
+    private final Side direction;
 
     /* PROPERTIES */
 
     // Overall behavioural
-    private boolean liquid;
-    private boolean attachmentAllowed = true;
-    private boolean replacementAllowed;
-    private int hardness = 3;
-    private boolean supportRequired;
-    private EnumBooleanMap<Side> fullSide = new EnumBooleanMap<>(Side.class);
-    private BlockSounds sounds = BlockSounds.NULL;
+    private final boolean liquid;
+    private final boolean attachmentAllowed;
+    private final boolean replacementAllowed;
+    private final int hardness;
+    private final boolean supportRequired;
+    private final EnumBooleanMap<Side> fullSide;
+    private final BlockSounds sounds;
 
     // Special rendering flags (TODO: clean this up)
-    private boolean water;
-    private boolean lava;
-    private boolean grass;
-    private boolean ice;
+    private final boolean water;
+    private final boolean lava;
+    private final boolean grass;
+    private final boolean ice;
 
     // Rendering related
-    private boolean invisible;
-    private boolean translucent;
-    private boolean doubleSided;
-    private boolean shadowCasting = true;
-    private boolean waving;
-    private byte luminance;
-    private Vector3f tint = new Vector3f(0, 0, 0);
-    private Map<BlockPart, BlockColorSource> colorSource = Maps.newEnumMap(BlockPart.class);
-    private Map<BlockPart, Vector4f> colorOffsets = Maps.newEnumMap(BlockPart.class);
+    private final boolean invisible;
+    private final boolean translucent;
+    private final boolean doubleSided;
+    private final boolean shadowCasting;
+    private final boolean waving;
+    private final byte luminance;
+    private final Vector3f tint;
+    private final Map<BlockPart, BlockColorSource> colorSource;
+    private final Map<BlockPart, Vector4f> colorOffsets;
 
     // Collision related
-    private boolean penetrable;
-    private boolean targetable = true;
-    private boolean climbable;
+    private final boolean penetrable;
+    private final boolean targetable;
+    private final boolean climbable;
 
     // Physics
-    private float mass = 10;
-    private boolean debrisOnDestroy = true;
+    private final float mass;
+    private final boolean debrisOnDestroy;
 
     // Entity integration
-    private String prefab = "";
-    private boolean keepActive;
-    private EntityRef entity = EntityRef.NULL;
-    private boolean lifecycleEventsRequired;
+    private final String prefab;
 
     // Inventory settings
-    private boolean directPickup;
-    private boolean stackable = true;
+    private final boolean directPickup;
+    private final boolean stackable;
 
-    /* Mesh */
-    private Mesh mesh;
-    private BlockAppearance primaryAppearance = new BlockAppearance();
+    private final BlockAppearance primaryAppearance;
     // TODO: Remove once liquids have nicer generation
-    private Map<Side, BlockMeshPart> loweredLiquidMesh = Maps.newEnumMap(Side.class);
+    private final Map<Side, BlockMeshPart> loweredLiquidMesh;
 
     /* Collision */
-    private CollisionShape collisionShape;
-    private Vector3f collisionOffset;
-    private AABB bounds = AABB.createEmpty();
+    private final CollisionShape collisionShape;
+    private final Vector3f collisionOffset;
+    private final AABB bounds;
 
-    /**
-     * Init. a new block with default properties in place.
-     */
-    public Block() {
-        for (BlockPart part : BlockPart.values()) {
-            colorSource.put(part, DefaultColorSource.DEFAULT);
-            colorOffsets.put(part, new Vector4f(1.0f, 1.0f, 1.0f, 1.0f));
-        }
+    public Block(String displayName, BlockUri uri, BlockFamily family, Side direction, boolean liquid,
+                 boolean attachmentAllowed, boolean replacementAllowed, int hardness, boolean supportRequired,
+                 EnumBooleanMap<Side> fullSide, BlockSounds sounds, boolean water, boolean lava, boolean grass,
+                 boolean ice, boolean invisible, boolean translucent, boolean doubleSided, boolean shadowCasting,
+                 boolean waving, byte luminance, Vector3f tint, Map<BlockPart, BlockColorSource> colorSource,
+                 Map<BlockPart, Vector4f> colorOffsets, boolean penetrable, boolean targetable, boolean climbable,
+                 float mass, boolean debrisOnDestroy, String prefab, boolean keepActive,
+                 boolean lifecycleEventsRequired, boolean directPickup, boolean stackable,
+                 BlockAppearance primaryAppearance, Map<Side, BlockMeshPart> loweredLiquidMesh,
+                 CollisionShape collisionShape, Vector3f collisionOffset, AABB bounds) {
+        this.displayName = displayName;
+        this.uri = uri;
+        this.family = family;
+        this.direction = direction;
+        this.liquid = liquid;
+        this.attachmentAllowed = attachmentAllowed;
+        this.replacementAllowed = replacementAllowed;
+        this.hardness = hardness;
+        this.supportRequired = supportRequired;
+        this.fullSide = fullSide;
+        this.sounds = sounds;
+        this.water = water;
+        this.lava = lava;
+        this.grass = grass;
+        this.ice = ice;
+        this.invisible = invisible;
+        this.translucent = translucent;
+        this.doubleSided = doubleSided;
+        this.shadowCasting = shadowCasting;
+        this.waving = waving;
+        this.luminance = luminance;
+        this.tint = tint;
+        this.colorSource = colorSource;
+        this.colorOffsets = colorOffsets;
+        this.penetrable = penetrable;
+        this.targetable = targetable;
+        this.climbable = climbable;
+        this.mass = mass;
+        this.debrisOnDestroy = debrisOnDestroy;
+        this.prefab = prefab;
+        this.keepActive = keepActive;
+        this.lifecycleEventsRequired = lifecycleEventsRequired;
+        this.directPickup = directPickup;
+        this.stackable = stackable;
+        this.primaryAppearance = primaryAppearance;
+        this.loweredLiquidMesh = loweredLiquidMesh;
+        this.collisionShape = collisionShape;
+        this.collisionOffset = collisionOffset;
+        this.bounds = bounds;
     }
 
     public short getId() {
@@ -156,28 +199,12 @@ public final class Block {
         return uri;
     }
 
-    public void setUri(BlockUri uri) {
-        this.uri = uri;
-    }
-
     public String getDisplayName() {
         return displayName;
     }
 
-    public void setDisplayName(String displayName) {
-        this.displayName = displayName;
-    }
-
     public BlockFamily getBlockFamily() {
         return family;
-    }
-
-    public void setBlockFamily(BlockFamily value) {
-        this.family = value;
-    }
-
-    public void setDirection(Side direction) {
-        this.direction = direction;
     }
 
     public Side getDirection() {
@@ -191,10 +218,6 @@ public final class Block {
         return doubleSided;
     }
 
-    public void setDoubleSided(boolean doubleSided) {
-        this.doubleSided = doubleSided;
-    }
-
     /**
      * A liquid has some special handling around shape
      *
@@ -204,40 +227,20 @@ public final class Block {
         return liquid;
     }
 
-    public void setLiquid(boolean liquid) {
-        this.liquid = liquid;
-    }
-
     public boolean isWater() {
         return water;
-    }
-
-    public void setWater(boolean water) {
-        this.water = water;
     }
 
     public boolean isLava() {
         return lava;
     }
 
-    public void setLava(boolean lava) {
-        this.lava = lava;
-    }
-
     public boolean isGrass() {
         return grass;
     }
 
-    public void setGrass(boolean grass) {
-        this.grass = grass;
-    }
-
     public boolean isIce() {
         return ice;
-    }
-
-    public void setIce(boolean ice) {
-        this.ice = ice;
     }
 
     /**
@@ -247,10 +250,6 @@ public final class Block {
         return sounds;
     }
 
-    public void setSounds(BlockSounds sounds) {
-        this.sounds = sounds;
-    }
-
     /**
      * @return Whether this block is translucent/alpha masked
      */
@@ -258,19 +257,11 @@ public final class Block {
         return translucent;
     }
 
-    public void setTranslucent(boolean translucent) {
-        this.translucent = translucent;
-    }
-
     /**
      * @return Whether this block needs to be rendered at all
      */
     public boolean isInvisible() {
         return invisible;
-    }
-
-    public void setInvisible(boolean invisible) {
-        this.invisible = invisible;
     }
 
     /**
@@ -282,20 +273,12 @@ public final class Block {
         return penetrable;
     }
 
-    public void setPenetrable(boolean penetrable) {
-        this.penetrable = penetrable;
-    }
-
     /**
      * @return Does this block create a slight shadow around it
      */
     // TODO: Remove this once SSAO is implemented?
     public boolean isShadowCasting() {
         return shadowCasting && luminance == 0;
-    }
-
-    public void setShadowCasting(boolean shadowCasting) {
-        this.shadowCasting = shadowCasting;
     }
 
     /**
@@ -305,16 +288,8 @@ public final class Block {
         return targetable;
     }
 
-    public void setTargetable(boolean targetable) {
-        this.targetable = targetable;
-    }
-
     public boolean isClimbable() {
         return climbable;
-    }
-
-    public void setClimbable(boolean value) {
-        this.climbable = value;
     }
 
     /**
@@ -324,10 +299,6 @@ public final class Block {
         return waving;
     }
 
-    public void setWaving(boolean waving) {
-        this.waving = waving;
-    }
-
     /**
      * @return Whether this block can be replaced freely by other blocks
      */
@@ -335,19 +306,11 @@ public final class Block {
         return replacementAllowed;
     }
 
-    public void setReplacementAllowed(boolean replacementAllowed) {
-        this.replacementAllowed = replacementAllowed;
-    }
-
     /**
      * @return Whether blocks can be attached to this block
      */
     public boolean isAttachmentAllowed() {
         return attachmentAllowed;
-    }
-
-    public void setAttachmentAllowed(boolean attachmentAllowed) {
-        this.attachmentAllowed = attachmentAllowed;
     }
 
     public boolean canAttachTo(Side side) {
@@ -361,19 +324,11 @@ public final class Block {
         return supportRequired;
     }
 
-    public void setSupportRequired(boolean supportRequired) {
-        this.supportRequired = supportRequired;
-    }
-
     /**
      * @return The entity prefab for this block
      */
     public String getPrefab() {
         return prefab;
-    }
-
-    public void setPrefab(String value) {
-        prefab = (value == null) ? "" : value;
     }
 
     public boolean isKeepActive() {
@@ -388,16 +343,12 @@ public final class Block {
         return entity;
     }
 
-    public void setEntity(EntityRef entity) {
-        this.entity = entity;
+    public boolean isLifecycleEventsRequired() {
+        return lifecycleEventsRequired;
     }
 
     public void setLifecycleEventsRequired(boolean lifecycleEventsRequired) {
         this.lifecycleEventsRequired = lifecycleEventsRequired;
-    }
-
-    public boolean isLifecycleEventsRequired() {
-        return lifecycleEventsRequired;
     }
 
     /**
@@ -407,16 +358,8 @@ public final class Block {
         return directPickup;
     }
 
-    public void setDirectPickup(boolean directPickup) {
-        this.directPickup = directPickup;
-    }
-
     public boolean isStackable() {
         return stackable;
-    }
-
-    public void setStackable(boolean stackable) {
-        this.stackable = stackable;
     }
 
     /**
@@ -424,10 +367,6 @@ public final class Block {
      */
     public int getHardness() {
         return hardness;
-    }
-
-    public void setHardness(int hardness) {
-        this.hardness = hardness;
     }
 
     public boolean isDestructible() {
@@ -441,16 +380,8 @@ public final class Block {
         return luminance;
     }
 
-    public void setLuminance(byte luminance) {
-        this.luminance = (byte) TeraMath.clamp(luminance, 0, ChunkConstants.MAX_LIGHT);
-    }
-
     public Vector3f getTint() {
         return tint;
-    }
-
-    public void setTint(Vector3f tint) {
-        this.tint.set(tint);
     }
 
     /**
@@ -460,44 +391,16 @@ public final class Block {
         return debrisOnDestroy;
     }
 
-    public void setDebrisOnDestroy(boolean debrisOnDestroy) {
-        this.debrisOnDestroy = debrisOnDestroy;
-    }
-
     public float getMass() {
         return mass;
-    }
-
-    public void setMass(float mass) {
-        this.mass = mass;
     }
 
     public BlockColorSource getColorSource(BlockPart part) {
         return colorSource.get(part);
     }
 
-    public void setColorSource(BlockColorSource colorSource) {
-        for (BlockPart part : BlockPart.values()) {
-            this.colorSource.put(part, colorSource);
-        }
-    }
-
-    public void setColorSource(BlockPart part, BlockColorSource value) {
-        this.colorSource.put(part, value);
-    }
-
     public Vector4f getColorOffset(BlockPart part) {
         return colorOffsets.get(part);
-    }
-
-    public void setColorOffset(BlockPart part, Vector4f color) {
-        colorOffsets.put(part, color);
-    }
-
-    public void setColorOffsets(Vector4f color) {
-        for (BlockPart part : BlockPart.values()) {
-            colorOffsets.put(part, color);
-        }
     }
 
     public BlockAppearance getPrimaryAppearance() {
@@ -507,11 +410,6 @@ public final class Block {
     public BlockAppearance getAppearance(Map<Side, Block> adjacentBlocks) {
         return primaryAppearance;
     }
-
-    public void setPrimaryAppearance(BlockAppearance appearence) {
-        this.primaryAppearance = appearence;
-    }
-
 
     public Mesh getMesh() {
         if (mesh == null || mesh.isDisposed()) {
@@ -524,20 +422,12 @@ public final class Block {
         return loweredLiquidMesh.get(side);
     }
 
-    public void setLoweredLiquidMesh(Side side, BlockMeshPart meshPart) {
-        loweredLiquidMesh.put(side, meshPart);
-    }
-
     /**
      * @param side
      * @return Is the given side of the block "full" (a full square filling the side)
      */
     public boolean isFullSide(Side side) {
         return fullSide.get(side);
-    }
-
-    public void setFullSide(Side side, boolean full) {
-        fullSide.put(side, full);
     }
 
     /**
@@ -559,17 +449,6 @@ public final class Block {
         color.w *= colorOffset.w;
 
         return color;
-    }
-
-    public void setCollision(Vector3f offset, CollisionShape shape) {
-        collisionShape = shape;
-        collisionOffset = offset;
-        Transform t = new Transform(new Matrix4f(new Quat4f(0, 0, 0, 1), offset, 1.0f));
-        Vector3f min = new Vector3f();
-        Vector3f max = new Vector3f();
-        shape.getAabb(t, min, max);
-
-        bounds = AABB.createMinMax(min, max);
     }
 
     public CollisionShape getCollisionShape() {
@@ -602,9 +481,6 @@ public final class Block {
 
         if (mesh == null || mesh.isDisposed()) {
             generateMesh();
-        } else if (mesh.isDisposed()) {
-            logger.error("Cannot render disposed mesh");
-            return;
         }
 
         mesh.render();
@@ -627,9 +503,12 @@ public final class Block {
         mesh = tessellator.generateMesh(new AssetUri(AssetType.MESH, uri.toString()));
     }
 
+    public void setEntity(EntityRef entity) {
+        this.entity = entity;
+    }
+
     @Override
     public String toString() {
         return uri.toString();
     }
-
 }

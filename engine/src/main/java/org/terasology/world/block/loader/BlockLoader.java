@@ -189,7 +189,7 @@ public class BlockLoader implements BlockBuilderHelper {
 
             def.shape = (shape.getURI().toSimpleString());
             if (shape.isCollisionYawSymmetric()) {
-                Block block = constructSingleBlock(blockDefUri, def);
+                BlockBuilder block = constructSimpleBlock(blockDefUri, def);
                 if (block.getDisplayName().isEmpty()) {
                     block.setDisplayName(shape.getDisplayName());
                 } else if (!shape.getDisplayName().isEmpty()) {
@@ -197,9 +197,9 @@ public class BlockLoader implements BlockBuilderHelper {
                 }
                 return new SymmetricFamily(uri, block, def.categories);
             } else {
-                Map<Side, Block> blockMap = Maps.newEnumMap(Side.class);
+                Map<Side, BlockBuilder> blockMap = Maps.newEnumMap(Side.class);
                 constructHorizontalBlocks(blockDefUri, def, blockMap);
-                for (Block block : blockMap.values()) {
+                for (BlockBuilder block : blockMap.values()) {
                     if (block.getDisplayName().isEmpty()) {
                         block.setDisplayName(shape.getDisplayName());
                     } else if (!shape.getDisplayName().isEmpty()) {
@@ -262,10 +262,10 @@ public class BlockLoader implements BlockBuilderHelper {
                 }
                 blockDef.shape = shapeString;
                 if (shape.isCollisionYawSymmetric()) {
-                    Block block = constructSingleBlock(blockDefUri, blockDef);
+                    BlockBuilder block = constructSimpleBlock(blockDefUri, blockDef);
                     result.add(new SymmetricFamily(familyUri, block, blockDef.categories));
                 } else {
-                    Map<Side, Block> blockMap = Maps.newEnumMap(Side.class);
+                    Map<Side, BlockBuilder> blockMap = Maps.newEnumMap(Side.class);
                     constructHorizontalBlocks(blockDefUri, blockDef, blockMap);
                     result.add(new HorizontalBlockFamily(familyUri, blockMap, blockDef.categories));
                 }
@@ -275,17 +275,13 @@ public class BlockLoader implements BlockBuilderHelper {
     }
 
     @Override
-    public Block constructSimpleBlock(AssetUri blockDefUri, BlockDefinition blockDefinition) {
-        return constructSingleBlock(blockDefUri, blockDefinition);
-    }
-
-    private Block constructSingleBlock(AssetUri blockDefUri, BlockDefinition blockDef) {
+    public BlockBuilder constructSimpleBlock(AssetUri blockDefUri, BlockDefinition blockDef) {
         Map<BlockPart, AssetUri> tileUris = prepareTiles(blockDef, blockDefUri);
         Map<BlockPart, DefaultColorSource> colorSourceMap = prepareColorSources(blockDef);
         Map<BlockPart, Vector4f> colorOffsetsMap = prepareColorOffsets(blockDef);
         BlockShape shape = getShape(blockDef);
 
-        Block block = createRawBlock(blockDef, blockDefUri.getAssetName());
+        BlockBuilder block = createRawBlock(blockDef, blockDefUri.getAssetName());
         block.setPrimaryAppearance(createAppearance(shape, tileUris, Rotation.none()));
         setBlockFullSides(block, shape, Rotation.none());
         block.setCollision(shape.getCollisionOffset(Rotation.none()), shape.getCollisionShape(Rotation.none()));
@@ -303,20 +299,20 @@ public class BlockLoader implements BlockBuilderHelper {
     }
 
     @Override
-    public Map<Side, Block> constructHorizontalRotatedBlocks(AssetUri blockDefUri, BlockDefinition blockDefinition) {
-        Map<Side, Block> result = Maps.newHashMap();
+    public Map<Side, BlockBuilder> constructHorizontalRotatedBlocks(AssetUri blockDefUri, BlockDefinition blockDefinition) {
+        Map<Side, BlockBuilder> result = Maps.newHashMap();
         constructHorizontalBlocks(blockDefUri, blockDefinition, result);
         return result;
     }
 
     @Override
-    public Block constructTransformedBlock(AssetUri blockDefUri, BlockDefinition blockDef, Rotation rotation) {
+    public BlockBuilder constructTransformedBlock(AssetUri blockDefUri, BlockDefinition blockDef, Rotation rotation) {
         Map<BlockPart, AssetUri> tileUris = prepareTiles(blockDef, blockDefUri);
         Map<BlockPart, DefaultColorSource> colorSourceMap = prepareColorSources(blockDef);
         Map<BlockPart, Vector4f> colorOffsetsMap = prepareColorOffsets(blockDef);
         BlockShape shape = getShape(blockDef);
 
-        Block block = createRawBlock(blockDef, blockDefUri.getAssetName());
+        BlockBuilder block = createRawBlock(blockDef, blockDefUri.getAssetName());
         block.setDirection(rotation.rotate(Side.FRONT));
         block.setPrimaryAppearance(createAppearance(shape, tileUris, rotation));
         setBlockFullSides(block, shape, rotation);
@@ -330,7 +326,7 @@ public class BlockLoader implements BlockBuilderHelper {
         return block;
     }
 
-    private void constructHorizontalBlocks(AssetUri blockDefUri, BlockDefinition blockDef, Map<Side, Block> blockMap) {
+    private void constructHorizontalBlocks(AssetUri blockDefUri, BlockDefinition blockDef, Map<Side, BlockBuilder> blockMap) {
         for (Rotation rot : Rotation.horizontalRotations()) {
             blockMap.put(rot.rotate(Side.FRONT), constructTransformedBlock(blockDefUri, blockDef, rot));
         }
@@ -392,14 +388,14 @@ public class BlockLoader implements BlockBuilderHelper {
         return new BlockAppearance(meshParts, textureAtlasPositions);
     }
 
-    private void setBlockFullSides(Block block, BlockShape shape, Rotation rot) {
+    private void setBlockFullSides(BlockBuilder block, BlockShape shape, Rotation rot) {
         for (Side side : Side.values()) {
             BlockPart targetPart = BlockPart.fromSide(rot.rotate(side));
             block.setFullSide(targetPart.getSide(), shape.isBlockingSide(side));
         }
     }
 
-    private void applyLoweredShape(Block block, BlockShape shape, Map<BlockPart, AssetUri> tileUris) {
+    private void applyLoweredShape(BlockBuilder block, BlockShape shape, Map<BlockPart, AssetUri> tileUris) {
         for (Side side : Side.values()) {
             BlockPart part = BlockPart.fromSide(side);
             BlockMeshPart meshPart = shape
@@ -410,27 +406,27 @@ public class BlockLoader implements BlockBuilderHelper {
         }
     }
 
-    private Block createRawBlock(BlockDefinition def, Name defaultName) {
-        Block block = new Block();
-        block.setLiquid(def.liquid);
-        block.setWater(def.water);
-        block.setLava(def.lava);
-        block.setGrass(def.grass);
-        block.setIce(def.ice);
-        block.setHardness(def.hardness);
-        block.setAttachmentAllowed(def.attachmentAllowed);
-        block.setReplacementAllowed(def.replacementAllowed);
-        block.setSupportRequired(def.supportRequired);
-        block.setPenetrable(def.penetrable);
-        block.setTargetable(def.targetable);
-        block.setClimbable(def.climbable);
-        block.setInvisible(def.invisible);
-        block.setTranslucent(def.translucent);
-        block.setDoubleSided(def.doubleSided);
-        block.setShadowCasting(def.shadowCasting);
-        block.setWaving(def.waving);
-        block.setLuminance(def.luminance);
-        block.setTint(def.tint);
+    private BlockBuilder createRawBlock(BlockDefinition def, Name defaultName) {
+        BlockBuilder block = new BlockBuilder()
+                .setLiquid(def.liquid)
+                .setWater(def.water)
+                .setLava(def.lava)
+                .setGrass(def.grass)
+                .setIce(def.ice)
+                .setHardness(def.hardness)
+                .setAttachmentAllowed(def.attachmentAllowed)
+                .setReplacementAllowed(def.replacementAllowed)
+                .setSupportRequired(def.supportRequired)
+                .setPenetrable(def.penetrable)
+                .setTargetable(def.targetable)
+                .setClimbable(def.climbable)
+                .setInvisible(def.invisible)
+                .setTranslucent(def.translucent)
+                .setDoubleSided(def.doubleSided)
+                .setShadowCasting(def.shadowCasting)
+                .setWaving(def.waving)
+                .setLuminance(def.luminance)
+                .setTint(def.tint);
         if (!def.displayName.isEmpty()) {
             block.setDisplayName(def.displayName);
         } else {

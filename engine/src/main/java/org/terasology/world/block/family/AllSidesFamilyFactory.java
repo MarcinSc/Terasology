@@ -22,6 +22,7 @@ import org.terasology.math.Rotation;
 import org.terasology.math.Side;
 import org.terasology.math.Yaw;
 import org.terasology.world.block.Block;
+import org.terasology.world.block.BlockBuilder;
 import org.terasology.world.block.BlockUri;
 import org.terasology.world.block.loader.BlockDefinition;
 
@@ -32,8 +33,8 @@ import java.util.Map;
 public class AllSidesFamilyFactory implements BlockFamilyFactory {
     @Override
     public BlockFamily createBlockFamily(BlockBuilderHelper blockBuilder, AssetUri blockDefUri, BlockDefinition blockDefinition, JsonObject blockDefJson) {
-        Map<Side, Block> blocksBySide = new EnumMap<Side, Block>(Side.class);
-        final Block frontBlock = blockBuilder.constructSimpleBlock(blockDefUri, blockDefinition);
+        Map<Side, BlockBuilder> blocksBySide = new EnumMap<>(Side.class);
+        final BlockBuilder frontBlock = blockBuilder.constructSimpleBlock(blockDefUri, blockDefinition);
         blocksBySide.put(Side.FRONT, frontBlock);
         blocksBySide.put(Side.LEFT, blockBuilder.constructTransformedBlock(blockDefUri, blockDefinition, Rotation.rotate(Yaw.CLOCKWISE_90)));
         blocksBySide.put(Side.BACK, blockBuilder.constructTransformedBlock(blockDefUri, blockDefinition, Rotation.rotate(Yaw.CLOCKWISE_180)));

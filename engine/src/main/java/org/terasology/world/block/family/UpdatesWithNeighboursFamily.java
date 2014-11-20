@@ -16,12 +16,15 @@
 package org.terasology.world.block.family;
 
 import gnu.trove.map.TByteObjectMap;
+import gnu.trove.map.hash.TByteObjectHashMap;
+import gnu.trove.procedure.TByteObjectProcedure;
 import org.terasology.math.Side;
 import org.terasology.math.SideBitFlag;
 import org.terasology.math.Vector3i;
 import org.terasology.world.BlockEntityRegistry;
 import org.terasology.world.WorldProvider;
 import org.terasology.world.block.Block;
+import org.terasology.world.block.BlockBuilder;
 import org.terasology.world.block.BlockUri;
 
 import java.util.List;
@@ -33,16 +36,23 @@ public class UpdatesWithNeighboursFamily extends AbstractBlockFamily {
     private byte connectionSides;
 
     public UpdatesWithNeighboursFamily(ConnectionCondition connectionCondition, BlockUri blockUri,
-                                       List<String> categories, Block archetypeBlock, TByteObjectMap<Block> blocks, byte connectionSides) {
+                                       List<String> categories, Block archetypeBlock, TByteObjectMap<BlockBuilder> blockBuilders, byte connectionSides) {
         super(blockUri, categories);
         this.connectionCondition = connectionCondition;
         this.archetypeBlock = archetypeBlock;
-        this.blocks = blocks;
         this.connectionSides = connectionSides;
 
-        for (Block block : blocks.valueCollection()) {
-            block.setBlockFamily(this);
-        }
+        this.blocks = new TByteObjectHashMap<>();
+
+        blockBuilders.forEachEntry(
+                new TByteObjectProcedure<BlockBuilder>() {
+                    @Override
+                    public boolean execute(byte a, BlockBuilder b) {
+                        b.setFamily(UpdatesWithNeighboursFamily.this);
+                        blocks.put(a, b.build());
+                        return true;
+                    }
+                });
     }
 
     @Override

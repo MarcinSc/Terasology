@@ -20,6 +20,7 @@ import org.terasology.math.Vector3i;
 import org.terasology.world.BlockEntityRegistry;
 import org.terasology.world.WorldProvider;
 import org.terasology.world.block.Block;
+import org.terasology.world.block.BlockBuilder;
 import org.terasology.world.block.BlockUri;
 
 import java.util.Locale;
@@ -29,21 +30,21 @@ public class AllSidesFamily extends AbstractBlockFamily implements SideDefinedBl
     private Block archetypeBlock;
     private Map<Side, Block> sideBlocks;
 
-    public AllSidesFamily(BlockUri uri, Iterable<String> categories, Block archetypeBlock, Map<Side, Block> sideBlocks) {
+    public AllSidesFamily(BlockUri uri, Iterable<String> categories, BlockBuilder archetypeBlock, Map<Side, BlockBuilder> sideBlocks) {
         super(uri, categories);
 
-        for (Map.Entry<Side, Block> blockBySide : sideBlocks.entrySet()) {
+        for (Map.Entry<Side, BlockBuilder> blockBySide : sideBlocks.entrySet()) {
             final Side side = blockBySide.getKey();
-            final Block block = blockBySide.getValue();
+            final BlockBuilder block = blockBySide.getValue();
             if (block == null) {
                 throw new IllegalArgumentException("Missing block for side: " + side.toString());
             }
-            block.setBlockFamily(this);
+            block.setFamily(this);
             block.setUri(new BlockUri(uri, side.name()));
         }
 
-        this.archetypeBlock = archetypeBlock;
-        this.sideBlocks = sideBlocks;
+        this.archetypeBlock = archetypeBlock.build();
+        this.sideBlocks = BlockFamilyUtil.buildBlockMap(sideBlocks);
     }
 
     @Override
