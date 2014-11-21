@@ -399,10 +399,6 @@ public final class Block {
         return colorSource.get(part);
     }
 
-    public Vector4f getColorOffset(BlockPart part) {
-        return colorOffsets.get(part);
-    }
-
     public BlockAppearance getPrimaryAppearance() {
         return primaryAppearance;
     }
