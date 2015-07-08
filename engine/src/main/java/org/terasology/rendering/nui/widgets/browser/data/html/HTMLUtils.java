@@ -131,7 +131,7 @@ public final class HTMLUtils {
     }
 
     private static ContainerInteger getMinimumWidth(Attributes attributes) {
-        String widthStr = getStyleAttribute(attributes, "width");
+        String widthStr = getStyleAttribute(attributes, "min-width");
         if (widthStr != null) {
             return parseContainerInteger(widthStr);
         }
