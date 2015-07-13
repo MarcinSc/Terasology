@@ -15,17 +15,6 @@
  */
 package org.terasology.rendering.nui.widgets.browser.ui.style;
 
-import org.terasology.rendering.assets.font.Font;
-import org.terasology.rendering.nui.Color;
-
-public interface TextRenderStyle {
-    default Font getFont(boolean hyperlink) {
-        return null;
-    }
-
-    default Color getColor(boolean hyperlink) {
-        return null;
-    }
-
-    default UnderlineStyle getUnderlineStyle(boolean hyperlink) { return null; }
+public interface UnderlineStyle {
+    public int getUnderlineWidth();
 }

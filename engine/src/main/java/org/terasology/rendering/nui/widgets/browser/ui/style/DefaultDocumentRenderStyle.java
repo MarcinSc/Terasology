@@ -99,6 +99,11 @@ public class DefaultDocumentRenderStyle implements DocumentRenderStyle {
     }
 
     @Override
+    public UnderlineStyle getUnderlineStyle(boolean hyperlink) {
+        return new DefaultUnderlineStyle(0);
+    }
+
+    @Override
     public Color getColor(boolean hyperlink) {
         if (hyperlink) {
             return Color.BLUE;

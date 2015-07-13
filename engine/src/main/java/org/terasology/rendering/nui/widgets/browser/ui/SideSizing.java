@@ -13,19 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.terasology.rendering.nui.widgets.browser.ui.style;
+package org.terasology.rendering.nui.widgets.browser.ui;
 
-import org.terasology.rendering.assets.font.Font;
-import org.terasology.rendering.nui.Color;
+public class SideSizing {
+    public final int top;
+    public final int right;
+    public final int bottom;
+    public final int left;
 
-public interface TextRenderStyle {
-    default Font getFont(boolean hyperlink) {
-        return null;
+    public SideSizing(int top, int right, int bottom, int left) {
+        this.top = top;
+        this.right = right;
+        this.bottom = bottom;
+        this.left = left;
     }
-
-    default Color getColor(boolean hyperlink) {
-        return null;
-    }
-
-    default UnderlineStyle getUnderlineStyle(boolean hyperlink) { return null; }
 }

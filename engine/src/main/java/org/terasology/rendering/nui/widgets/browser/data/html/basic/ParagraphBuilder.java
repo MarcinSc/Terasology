@@ -25,7 +25,9 @@ import org.terasology.rendering.nui.widgets.browser.data.html.HTMLBlockBuilder;
 import org.terasology.rendering.nui.widgets.browser.data.html.HTMLFontResolver;
 import org.terasology.rendering.nui.widgets.browser.data.html.HTMLParseException;
 import org.terasology.rendering.nui.widgets.browser.data.html.HTMLUtils;
+import org.terasology.rendering.nui.widgets.browser.ui.style.DefaultUnderlineStyle;
 import org.terasology.rendering.nui.widgets.browser.ui.style.TextRenderStyle;
+import org.terasology.rendering.nui.widgets.browser.ui.style.UnderlineStyle;
 import org.xml.sax.Attributes;
 
 import java.util.Map;
@@ -41,6 +43,7 @@ public class ParagraphBuilder implements HTMLBlockBuilder {
     private String fontName;
     private boolean bold;
     private boolean italic;
+    private boolean underline;
     private Color color;
 
     public ParagraphBuilder(HTMLFontResolver htmlFontResolver, Attributes attributes) {
@@ -59,6 +62,9 @@ public class ParagraphBuilder implements HTMLBlockBuilder {
             return true;
         } else if (tag.equalsIgnoreCase("i")) {
             italic = true;
+            return true;
+        } else if (tag.equalsIgnoreCase("u")) {
+            underline = true;
             return true;
         } else if (tag.equalsIgnoreCase("font")) {
             String name = HTMLUtils.findAttribute(attributes, "name");
@@ -90,7 +96,8 @@ public class ParagraphBuilder implements HTMLBlockBuilder {
 
     @Override
     public void text(String text) {
-        StaticTextRenderStyle renderStyle = new StaticTextRenderStyle(htmlFontResolver.getFont(fontName, bold, italic), color);
+        StaticTextRenderStyle renderStyle = new StaticTextRenderStyle(htmlFontResolver.getFont(fontName, bold, italic), color,
+                underline ? new DefaultUnderlineStyle(1) : new DefaultUnderlineStyle(0));
         paragraphData.append(new TextFlowRenderable(text, renderStyle, hyperlink));
     }
 
@@ -100,6 +107,8 @@ public class ParagraphBuilder implements HTMLBlockBuilder {
             bold = false;
         } else if (tag.equalsIgnoreCase("i")) {
             italic = false;
+        } else if (tag.equalsIgnoreCase("u")) {
+            underline = false;
         } else if (tag.equalsIgnoreCase("font")) {
             fontName = null;
             color = null;
@@ -116,10 +125,12 @@ public class ParagraphBuilder implements HTMLBlockBuilder {
     private static final class StaticTextRenderStyle implements TextRenderStyle {
         private Font font;
         private Color color;
+        private UnderlineStyle underlineStyle;
 
-        private StaticTextRenderStyle(Font font, Color color) {
+        private StaticTextRenderStyle(Font font, Color color, UnderlineStyle underlineStyle) {
             this.font = font;
             this.color = color;
+            this.underlineStyle = underlineStyle;
         }
 
         @Override
@@ -130,6 +141,11 @@ public class ParagraphBuilder implements HTMLBlockBuilder {
         @Override
         public Color getColor(boolean hyperlink) {
             return color;
+        }
+
+        @Override
+        public UnderlineStyle getUnderlineStyle(boolean hyperlink) {
+            return underlineStyle;
         }
     }
 }

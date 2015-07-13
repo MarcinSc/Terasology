@@ -44,4 +44,13 @@ public class FallbackTextRenderStyle implements TextRenderStyle {
         }
         return color;
     }
+
+    @Override
+    public UnderlineStyle getUnderlineStyle(boolean hyperlink) {
+        UnderlineStyle underlineStyle = style.getUnderlineStyle(hyperlink);
+        if (underlineStyle == null) {
+            underlineStyle = fallback.getUnderlineStyle(hyperlink);
+        }
+        return underlineStyle;
+    }
 }

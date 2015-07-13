@@ -21,8 +21,10 @@ import org.terasology.rendering.nui.Color;
 import org.terasology.rendering.nui.widgets.browser.data.ParagraphData;
 import org.terasology.rendering.nui.widgets.browser.data.basic.flow.FlowRenderable;
 import org.terasology.rendering.nui.widgets.browser.data.basic.flow.TextFlowRenderable;
+import org.terasology.rendering.nui.widgets.browser.ui.style.DefaultUnderlineStyle;
 import org.terasology.rendering.nui.widgets.browser.ui.style.ParagraphRenderStyle;
 import org.terasology.rendering.nui.widgets.browser.ui.style.TextRenderStyle;
+import org.terasology.rendering.nui.widgets.browser.ui.style.UnderlineStyle;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -216,6 +218,11 @@ public final class HTMLLikeParser {
         @Override
         public Color getColor(boolean isHyperlink) {
             return color;
+        }
+
+        @Override
+        public UnderlineStyle getUnderlineStyle(boolean hyperlink) {
+            return new DefaultUnderlineStyle(0);
         }
     }
 }

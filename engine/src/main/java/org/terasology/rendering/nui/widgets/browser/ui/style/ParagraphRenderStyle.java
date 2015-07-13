@@ -24,7 +24,22 @@ public interface ParagraphRenderStyle extends TextRenderStyle {
     }
 
     public enum ClearStyle {
-        LEFT, RIGHT, BOTH, NONE
+        LEFT(FloatStyle.LEFT), RIGHT(FloatStyle.RIGHT), BOTH(FloatStyle.LEFT, FloatStyle.RIGHT), NONE;
+
+        private FloatStyle[] clears;
+
+        private ClearStyle(FloatStyle... clears) {
+            this.clears = clears;
+        }
+
+        public boolean clears(FloatStyle floatStyle) {
+            for (FloatStyle clear : clears) {
+                if (clear == floatStyle) {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 
     default ContainerInteger getParagraphMarginTop() {
@@ -40,6 +55,22 @@ public interface ParagraphRenderStyle extends TextRenderStyle {
     }
 
     default ContainerInteger getParagraphMarginRight() {
+        return null;
+    }
+
+    default ContainerInteger getParagraphBorderTop() {
+        return null;
+    }
+
+    default ContainerInteger getParagraphBorderBottom() {
+        return null;
+    }
+
+    default ContainerInteger getParagraphBorderLeft() {
+        return null;
+    }
+
+    default ContainerInteger getParagraphBorderRight() {
         return null;
     }
 
