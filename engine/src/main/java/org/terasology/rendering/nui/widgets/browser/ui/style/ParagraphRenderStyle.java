@@ -19,16 +19,16 @@ import org.terasology.rendering.nui.Color;
 import org.terasology.rendering.nui.HorizontalAlign;
 
 public interface ParagraphRenderStyle extends TextRenderStyle {
-    public enum FloatStyle {
+    enum FloatStyle {
         LEFT, RIGHT, NONE
     }
 
-    public enum ClearStyle {
+    enum ClearStyle {
         LEFT(FloatStyle.LEFT), RIGHT(FloatStyle.RIGHT), BOTH(FloatStyle.LEFT, FloatStyle.RIGHT), NONE;
 
         private FloatStyle[] clears;
 
-        private ClearStyle(FloatStyle... clears) {
+        ClearStyle(FloatStyle... clears) {
             this.clears = clears;
         }
 
@@ -55,22 +55,6 @@ public interface ParagraphRenderStyle extends TextRenderStyle {
     }
 
     default ContainerInteger getParagraphMarginRight() {
-        return null;
-    }
-
-    default ContainerInteger getParagraphBorderTop() {
-        return null;
-    }
-
-    default ContainerInteger getParagraphBorderBottom() {
-        return null;
-    }
-
-    default ContainerInteger getParagraphBorderLeft() {
-        return null;
-    }
-
-    default ContainerInteger getParagraphBorderRight() {
         return null;
     }
 
